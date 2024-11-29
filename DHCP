@@ -1,0 +1,93 @@
+Installing the ISC DHCP Server on Ubuntu Server is a straightforward process. Follow the steps below to successfully set up the DHCP server:
+
+### Step 1: Update Your Server
+First, ensure that your server’s package index is up to date. Open a terminal and run:
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+```
+
+### Step 2: Install ISC DHCP Server
+Next, install the ISC DHCP Server package using the following command:
+
+```bash
+sudo apt install isc-dhcp-server -y
+```
+
+### Step 3: Configure the DHCP Server
+After installation, you need to configure the DHCP server.
+
+1. Open the DHCP configuration file using a text editor, such as nano:
+
+   ```bash
+   sudo nano /etc/dhcp/dhcpd.conf
+   ```
+
+2. In this file, you can define the global settings and the subnet configuration. Here’s a sample configuration to get you started:
+
+   ```plaintext
+   # Sample global settings
+   option domain-name "example.com";
+   option domain-name-servers ns1.example.com, ns2.example.com;
+   default-lease-time 600;
+   max-lease-time 7200;
+
+   # Configure the subnet for DHCP
+   subnet 192.168.1.0 netmask 255.255.255.0 {
+       range 192.168.1.10 192.168.1.100;    # Define the range of IPs to be leased
+       option routers 192.168.1.1;          # Specify the default gateway
+       option subnet-mask 255.255.255.0;   # Specify the subnet mask
+       option broadcast-address 192.168.1.255; # Specify the broadcast address
+   }
+   ```
+
+3. Make sure to adjust the subnet, range, routers, and other options according to your network configuration.
+
+4. Save the file and exit the editor (in nano, press `CTRL+X`, then `Y`, and hit `Enter`).
+
+### Step 4: Specify the Network Interface
+You need to specify the network interface that the DHCP server will use. Open the DHCP server defaults file:
+
+```bash
+sudo nano /etc/default/isc-dhcp-server
+```
+
+Find the line that specifies `INTERFACESv4` and set it to your network interface (such as `eth0`, `ens33`, etc.):
+
+```plaintext
+INTERFACESv4="eth0"    # Replace "eth0" with your actual interface name
+```
+
+You can check your network interfaces using:
+
+```bash
+ip a
+```
+
+### Step 5: Start and Enable the DHCP Server
+Now, start the DHCP server and enable it to start on boot:
+
+```bash
+sudo systemctl start isc-dhcp-server
+sudo systemctl enable isc-dhcp-server
+```
+
+### Step 6: Check the Status
+To check the status of the DHCP server, run:
+
+```bash
+sudo systemctl status isc-dhcp-server
+```
+
+Ensure that it is active and running without errors.
+
+### Step 7: Check the Logs
+If you encounter any issues, you can check the DHCP server logs for troubleshooting:
+
+```bash
+journalctl -u isc-dhcp-server
+```
+
+### Conclusion
+Your ISC DHCP Server should now be up and running on Ubuntu Server, distributing IP addresses to clients on your network. Make sure to configure your firewall (if enabled) to allow DHCP traffic (UDP ports 67 and 68). If you have any questions or need further assistance, feel free to ask!
